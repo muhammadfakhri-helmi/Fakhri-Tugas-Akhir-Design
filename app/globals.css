@@ -1,0 +1,205 @@
+@import "tailwindcss";
+
+/*
+  Design tokens — "technical drawing at depth".
+  Navy drafting ground, off-white drawing paper, and status colours that
+  always mean the same thing: cyan = operation/flow, green = meets study
+  criteria, amber = needs review, red = exceeds a limit, grey = not yet known.
+*/
+:root {
+  --bg: #0a1322;
+  --bg-2: #0e1a2d;
+  --panel: #0f1c30;
+  --line: #22334e;
+  --line-strong: #3a5074;
+  --ink: #e8edf4;
+  --muted: #9aa9be;
+  --faint: #7d8ca3;
+
+  --paper: #ece7da;
+  --paper-2: #e2dccb;
+  --paper-ink: #122038;
+  --paper-muted: #46546a;
+  --paper-line: #c9c0aa;
+
+  --flow: #4fcbdd;
+  --pass: #5ecb8f;
+  --review: #f0b24a;
+  --exceed: #e8695e;
+  --unknown: #7a8699;
+  --force: #f4efe2;
+
+  --c-dp: #aebdd2;
+  --c-hwdp: #7f96ba;
+  --c-dc: #52698c;
+  --c-bit: #e9e3d3;
+
+  --step-display: clamp(2.1rem, 1.2rem + 2.9vw, 4.1rem);
+  --step-h2: clamp(1.5rem, 1.15rem + 1vw, 2.15rem);
+  --step-h3: clamp(1.15rem, 1.05rem + 0.45vw, 1.45rem);
+  --step-body: clamp(1rem, 0.97rem + 0.15vw, 1.0875rem);
+  --step-small: 0.875rem;
+  --step-label: 0.72rem;
+
+  --header-h: 3.5rem;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-ink: var(--paper-ink);
+  --color-paper-muted: var(--paper-muted);
+  --color-paper-line: var(--paper-line);
+  --color-flow: var(--flow);
+  --color-pass: var(--pass);
+  --color-review: var(--review);
+  --color-exceed: var(--exceed);
+  --color-unknown: var(--unknown);
+  --color-force: var(--force);
+
+  --font-display: var(--font-archivo);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-plex-sans), system-ui, sans-serif;
+  font-size: var(--step-body);
+  line-height: 1.62;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: color-mix(in oklab, var(--flow) 40%, transparent); }
+
+:focus-visible {
+  outline: 2px solid var(--flow);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.display {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-stretch: 112%;
+  font-weight: 700;
+  font-size: var(--step-display);
+  letter-spacing: -0.022em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+.h2 {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-stretch: 106%;
+  font-weight: 650;
+  font-size: var(--step-h2);
+  letter-spacing: -0.015em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+.h3 {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-stretch: 104%;
+  font-weight: 600;
+  font-size: var(--step-h3);
+  line-height: 1.2;
+}
+.label {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: var(--step-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.prose-body { text-wrap: pretty; max-width: 62ch; }
+.nums { font-variant-numeric: tabular-nums lining-nums; }
+
+/* Narrative card that floats over the fixed 3D stage */
+.card {
+  background: color-mix(in oklab, var(--bg) 86%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+/* Drafting grid for the paper band */
+.paper-grid {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--paper-2) 1px, transparent 1px),
+    linear-gradient(90deg, var(--paper-2) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Range input styled as a drafting slider */
+input[type="range"].slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 32px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"].slider::-webkit-slider-runnable-track {
+  height: 2px;
+  background: currentColor;
+}
+input[type="range"].slider::-moz-range-track { height: 2px; background: currentColor; }
+input[type="range"].slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -10px;
+  border-radius: 50%;
+  background: var(--flow);
+  border: 4px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--flow);
+}
+input[type="range"].slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--flow);
+  border: 4px solid var(--bg);
+}
+input[type="range"].slider.on-paper::-webkit-slider-thumb { border-color: var(--paper); background: var(--paper-ink); box-shadow: 0 0 0 1px var(--paper-ink); }
+input[type="range"].slider.on-paper::-moz-range-thumb { border-color: var(--paper); background: var(--paper-ink); }
+input[type="range"].slider.on-paper:focus-visible { outline-color: var(--paper-ink); }
+
+/* Labels projected from the 3D stage */
+.stage-label > span {
+  display: inline-block;
+  transform: translate(-50%, -135%);
+  white-space: nowrap;
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: color-mix(in oklab, var(--bg) 78%, transparent);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 0.2rem 0.45rem;
+}
+.stage-label[data-tone="flow"] > span { color: var(--flow); border-color: color-mix(in oklab, var(--flow) 50%, transparent); }
+.stage-label[data-status="pass"] > span { color: var(--pass); border-color: color-mix(in oklab, var(--pass) 50%, transparent); }
+.stage-label[data-status="review"] > span { color: var(--review); border-color: color-mix(in oklab, var(--review) 50%, transparent); }
+.stage-label[data-status="unknown"] > span { color: var(--muted); }
