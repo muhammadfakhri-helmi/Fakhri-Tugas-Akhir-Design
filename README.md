@@ -6,6 +6,8 @@ checked for **tension, torque, drag and critical buckling** by load-mechanics
 hand calculation and by WellPlan® simulation — then revised where they missed
 the study criteria.
 
+**Live site:** https://muhammadfakhri-helmi.github.io/Fakhri-Tugas-Akhir-Design/
+
 > Undergraduate final project · Petroleum engineering · Muhammad Fakhri Helmi.
 > Study outcomes are summarised from the project's own conclusions. The well
 > path, 3D models, curves, bars and indicators are original conceptual
