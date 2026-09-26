@@ -2,13 +2,14 @@
 
 import { motion } from "motion/react";
 import { ArrowDown } from "lucide-react";
-import { chapters, meta } from "@/data/story";
+import { chapters } from "@/data/story";
+import { useDict } from "@/lib/i18n";
 import { duration, ease, stagger } from "@/lib/motion";
 import { Frame } from "./layout";
 
-const QUESTION = "How do you know a drillstring can survive the path it must follow?".split(" ");
-
 export function Hero() {
+  const t = useDict();
+  const words = t.hero.question.split(" ");
   return (
     <section
       id="question"
@@ -22,10 +23,10 @@ export function Hero() {
             variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: duration.reveal } } }}
             className="label text-flow"
           >
-            {meta.framing}
+            {t.meta.framing}
           </motion.p>
           <h1 id="question-title" className="display mt-5">
-            {QUESTION.map((word, i) => (
+            {words.map((word, i) => (
               <span key={i} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
                 <motion.span
                   className="inline-block"
@@ -33,7 +34,7 @@ export function Hero() {
                 >
                   {word}
                 </motion.span>
-                {i < QUESTION.length - 1 && " "}
+                {i < words.length - 1 && " "}
               </span>
             ))}
           </h1>
@@ -41,7 +42,7 @@ export function Hero() {
             variants={{ hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: duration.reveal, ease: ease.out } } }}
             className="prose-body mt-6 text-lg text-muted"
           >
-            An interactive case study in drillstring design, mechanical loads, and validation — by {meta.author}.
+            {t.hero.sub(t.meta.author)}
           </motion.p>
           <motion.div
             variants={{ hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: duration.reveal, ease: ease.out } } }}
@@ -51,15 +52,15 @@ export function Hero() {
               href="#path"
               className="group inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-xl bg-flow px-5 font-medium text-bg transition-colors duration-200 hover:bg-[#7ad9e7]"
             >
-              Explore the analysis
+              {t.hero.explore}
               <ArrowDown size={17} aria-hidden="true" className="transition-transform duration-200 group-hover:translate-y-0.5" />
             </a>
             <a href="#conclusion" className="inline-flex min-h-12 cursor-pointer items-center rounded-xl border border-line-strong px-5 text-ink transition-colors duration-200 hover:border-ink">
-              Skip to the conclusion
+              {t.hero.skip}
             </a>
           </motion.div>
           <motion.nav
-            aria-label="Chapter index"
+            aria-label={t.ui.chapterIndex}
             variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: duration.reveal } } }}
             className="mt-10 hidden md:block"
           >
@@ -68,7 +69,7 @@ export function Hero() {
                 <li key={c.id}>
                   <a href={`#${c.id}`} className="label inline-flex min-h-6 items-center gap-1.5 text-muted transition-colors duration-200 hover:text-ink">
                     <span className="nums text-flow">{c.n}</span>
-                    {c.short}
+                    {t.chapters[c.id]}
                   </a>
                 </li>
               ))}

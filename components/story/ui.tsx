@@ -3,7 +3,8 @@
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { fadeUp, inView, staggerParent } from "@/lib/motion";
-import { CONCEPT_LABEL, statusText, type Status } from "@/data/story";
+import type { Status } from "@/data/story";
+import { useDict } from "@/lib/i18n";
 
 /** Chapter heading block: number + short name as eyebrow, then the headline. */
 export function ChapterHead({ n, name, title, id }: { n: string; name: string; title: string; id?: string }) {
@@ -35,10 +36,11 @@ export function StepCard({ children, className = "" }: { children: ReactNode; cl
 }
 
 export function ConceptNote({ className = "", tone = "dark" }: { className?: string; tone?: "dark" | "paper" }) {
+  const t = useDict();
   return (
     <p className={`label flex items-center gap-2 ${tone === "paper" ? "text-paper-muted" : "text-faint"} ${className}`}>
       <span aria-hidden="true" className={`inline-block h-2 w-2 rotate-45 border ${tone === "paper" ? "border-paper-muted" : "border-faint"}`} />
-      {CONCEPT_LABEL}
+      {t.ui.concept}
     </p>
   );
 }
@@ -58,10 +60,11 @@ const ring: Record<Status, string> = {
 
 /** Status never relies on colour alone: every chip carries its words. */
 export function StatusChip({ status, label, small = false }: { status: Status; label?: string; small?: boolean }) {
+  const t = useDict();
   return (
     <span className={`inline-flex items-center gap-2 rounded-full border ${ring[status]} ${small ? "px-2 py-0.5 text-[0.72rem]" : "px-3 py-1 text-sm"}`}>
       <StatusGlyph status={status} />
-      {label ?? statusText[status]}
+      {label ?? t.status[status]}
     </span>
   );
 }

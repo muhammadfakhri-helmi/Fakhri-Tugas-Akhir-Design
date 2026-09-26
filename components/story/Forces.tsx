@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { Pause, Play } from "lucide-react";
-import { forces } from "@/data/story";
+import { useDict } from "@/lib/i18n";
 import { fadeUp, inView, staggerParent } from "@/lib/motion";
 import { setStory, useStory, type Force } from "@/lib/store";
 import { Frame, Step } from "./layout";
@@ -46,6 +46,8 @@ export function ForceGlyph({ force, size = 28 }: { force: Force; size?: number }
 }
 
 function ForceControls({ at }: { at: Force }) {
+  const t = useDict();
+  const forces = t.forces.items;
   const paused = useStory((s) => s.paused);
   const choose = (f: Force) => {
     setStory({ force: f });
@@ -53,7 +55,7 @@ function ForceControls({ at }: { at: Force }) {
   };
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Segmented label={`Force (${forces[at].name} step)`} value={at} onChange={choose} options={ORDER.map((f) => ({ value: f, label: forces[f].name }))} />
+      <Segmented label={t.forces.controlLabel(forces[at].name)} value={at} onChange={choose} options={ORDER.map((f) => ({ value: f, label: forces[f].name }))} />
       <button
         type="button"
         aria-pressed={paused}
@@ -61,22 +63,21 @@ function ForceControls({ at }: { at: Force }) {
         className="inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-sm text-muted transition-colors duration-200 hover:text-ink"
       >
         {paused ? <Play size={15} aria-hidden="true" /> : <Pause size={15} aria-hidden="true" />}
-        {paused ? "Play" : "Pause"} motion
+        {paused ? t.ui.play : t.ui.pause}
       </button>
     </div>
   );
 }
 
 export function ForcesChapter() {
-
+  const t = useDict();
+  const forces = t.forces.items;
   return (
     <section id="forces" aria-labelledby="forces-title" className="relative">
       <Step scene="forces" force="tension">
         <StepCard>
-          <ChapterHead n="04" name="Four forces" id="forces-title" title="A viable design has to be checked against more than one force." />
-          <p className="prose-body mt-4 text-muted">
-            The same string, on the same path, is loaded four different ways. Scroll through them, or jump to one.
-          </p>
+          <ChapterHead n="04" name={t.chapters.forces} id="forces-title" title={t.forces.title} />
+          <p className="prose-body mt-4 text-muted">{t.forces.intro}</p>
           <div className="mt-5">
             <ForceControls at="tension" />
           </div>
@@ -96,9 +97,9 @@ export function ForcesChapter() {
         <Frame>
           <div className="card w-full max-w-[640px] p-5 sm:p-7">
             <motion.h3 variants={fadeUp} initial="hidden" whileInView="show" viewport={inView} className="h3">
-              Four forces become four criteria.
+              {t.forces.criteriaTitle}
             </motion.h3>
-            <p className="prose-body mt-2 text-muted">Each design had to pass every check, while drilling and while tripping in and out of the hole.</p>
+            <p className="prose-body mt-2 text-muted">{t.forces.criteriaBody}</p>
             <motion.ol variants={staggerParent(0.1)} initial="hidden" whileInView="show" viewport={inView} className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {ORDER.map((f) => (
                 <motion.li key={f} variants={fadeUp} className="rounded-xl border border-line bg-bg-2/70 p-4">
@@ -119,7 +120,8 @@ export function ForcesChapter() {
 }
 
 function ForceBody({ f }: { f: Force }) {
-  const d = forces[f];
+  const t = useDict();
+  const d = t.forces.items[f];
   return (
     <div id={`force-${f}`} className="mt-5 border-t border-line pt-5">
       <div className="flex items-center gap-3 text-force">
@@ -129,10 +131,10 @@ function ForceBody({ f }: { f: Force }) {
       <p className="mt-3 font-medium text-ink">{d.lead}</p>
       <p className="prose-body mt-2 text-muted">{d.body}</p>
       <p className="mt-4 rounded-lg border border-line bg-bg-2/70 px-3.5 py-2.5 text-sm">
-        <span className="label mr-2 text-flow">Check</span>
+        <span className="label mr-2 text-flow">{t.forces.check}</span>
         {d.check}
       </p>
-      {f === "buckling" && <p className="mt-3 text-sm text-faint">Conceptual shape — not a physical simulation.</p>}
+      {f === "buckling" && <p className="mt-3 text-sm text-faint">{t.forces.bucklingNote}</p>}
     </div>
   );
 }

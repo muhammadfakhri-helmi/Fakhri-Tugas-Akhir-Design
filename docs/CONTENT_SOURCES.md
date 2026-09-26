@@ -21,4 +21,12 @@ screenshots of the report or of the simulation software.
 
 Everything visual — the well path, 3D models, force glyphs, curves, bar
 positions, component proportions — is newly drawn and labelled
-"Conceptual visualization — not operational data".
+"Conceptual visualization — not operational data"
+("Visualisasi konseptual — bukan data operasional" on the Indonesian page).
+
+## Where the words live
+
+- `data/i18n/en.ts` — English copy (source of truth for structure).
+- `data/i18n/id.ts` — Bahasa Indonesia, type-checked against the English
+  dictionary. Both languages state the same findings; neither adds a claim.
+- `data/story.ts` — language-neutral statuses and conceptual geometry only.

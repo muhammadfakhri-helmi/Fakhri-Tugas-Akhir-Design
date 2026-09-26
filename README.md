@@ -6,7 +6,8 @@ checked for **tension, torque, drag and critical buckling** by load-mechanics
 hand calculation and by WellPlan® simulation — then revised where they missed
 the study criteria.
 
-**Live site:** https://muhammadfakhri-helmi.github.io/Fakhri-Tugas-Akhir-Design/
+**Live site:** https://muhammadfakhri-helmi.github.io/Fakhri-Tugas-Akhir-Design/ (English) ·
+https://muhammadfakhri-helmi.github.io/Fakhri-Tugas-Akhir-Design/id/ (Bahasa Indonesia)
 
 > Undergraduate final project · Petroleum engineering · Muhammad Fakhri Helmi.
 > Study outcomes are summarised from the project's own conclusions. The well
@@ -25,6 +26,24 @@ the study criteria.
 7. **Revision** — shorten the heavy-weight section, extend the drillpipe, re-test
 8. **Conclusion** — A recommended; B and C meet the criteria after revision
 9. **Approach** — define, test, compare, validate, revise, explain
+
+## Languages
+
+The site is bilingual. Both pages are generated statically, each with the right
+`<html lang>`:
+
+- `/` — English (the default and the URL to share)
+- `/id/` — Bahasa Indonesia
+
+The **EN / ID** switch in the header (and footer) opens the other language at
+the chapter being read. The choice is remembered in the browser, so a returning
+reader who picked Bahasa Indonesia is taken from `/` to `/id/` before the page
+paints. Drilling terms (tension, torque, drag, buckling, drillpipe, make-up
+torque…) stay in English in the Indonesian text, as they do in the field.
+
+All words live in `data/i18n/en.ts` and `data/i18n/id.ts`; the Indonesian
+dictionary is type-checked against the English one, so a missing string fails
+`npm run typecheck`. Unknown URLs get a bilingual 404 (`app/global-not-found.tsx`).
 
 ## Stack
 
@@ -61,13 +80,19 @@ also scans `out/`.
 ## Structure
 
 ```
-app/                     layout, page, design tokens (globals.css), icon
-components/story/        header + path rail, chapters, shared UI, scene tracker
+app/(english)/           root layout + page for "/"
+app/(indonesian)/        root layout + page for "/id/"
+app/shell.tsx            shared <html>, fonts, metadata for both languages
+app/global-not-found.tsx bilingual 404
+app/globals.css          design tokens
+components/Site.tsx      the whole case study, rendered in one language
+components/story/        header (EN/ID switch, path rail), chapters, shared UI
 components/three/        Stage (lazy loader + labels), Scene, Earth, Well,
                          Forces, Exploded, geometry, labels, SVG fallback
-data/story.ts            all copy, study findings (qualitative) and the
-                         conceptual curves/positions, kept apart
-lib/                     store (shared story state), motion tokens, colours
+data/i18n/en.ts, id.ts   every word on the page, per language
+data/story.ts            study findings (qualitative statuses) and the
+                         conceptual curves/positions — no words
+lib/                     store (shared story state), i18n context, motion, colours
 docs/                    design system and content-source notes
 scripts/check.mjs        privacy / hygiene check
 ```

@@ -1,6 +1,7 @@
 "use client";
 
 import { useStory } from "@/lib/store";
+import { useDict } from "@/lib/i18n";
 import { color } from "@/lib/tokens";
 
 // SVG section drawing of the same conceptual well: shown while the 3D chunk
@@ -9,6 +10,7 @@ import { color } from "@/lib/tokens";
 const PATH = "M 300 90 L 300 250 A 280 280 0 0 0 353.5 414.6 L 682.5 867.6";
 
 export function Fallback({ loading }: { loading: boolean }) {
+  const t = useDict();
   const scene = useStory((s) => s.scene);
   const segment = useStory((s) => s.segment);
   const hl = scene === "path" ? segment : null;
@@ -19,7 +21,7 @@ export function Fallback({ loading }: { loading: boolean }) {
         viewBox="0 0 1000 1000"
         className="h-[92vh] w-auto max-w-none opacity-90 md:mr-[4vw] max-md:mt-[8vh] max-md:h-[56vh]"
         role="img"
-        aria-label="Section drawing of a build-and-hold well path with a drillstring inside it"
+        aria-label={t.fallback.aria}
       >
         <defs>
           <pattern id="fb-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -43,14 +45,14 @@ export function Fallback({ loading }: { loading: boolean }) {
         <path d="M 609.1 766.2 L 673.3 854.6" stroke={color.dc} strokeWidth="13" />
         <circle cx="682.5" cy="867.6" r="10" fill={color.bit} />
         <text x="330" y="245" fill={color.muted} fontFamily="var(--font-plex-mono)" fontSize="20" letterSpacing="2">
-          KICK-OFF
+          {t.fallback.kickoff}
         </text>
         <text x="706" y="890" fill={color.muted} fontFamily="var(--font-plex-mono)" fontSize="20" letterSpacing="2">
-          TARGET
+          {t.fallback.target}
         </text>
       </svg>
       {loading && (
-        <p className="label absolute bottom-6 right-6 text-faint max-md:bottom-auto max-md:right-4 max-md:top-20">Loading 3D view…</p>
+        <p className="label absolute bottom-6 right-6 text-faint max-md:bottom-auto max-md:right-4 max-md:top-20">{t.ui.loading3d}</p>
       )}
     </div>
   );

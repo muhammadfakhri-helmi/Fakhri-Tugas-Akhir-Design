@@ -2,7 +2,8 @@
 
 import { useId, useMemo, useState, useSyncExternalStore } from "react";
 import { motion } from "motion/react";
-import { conceptCurve, conceptLimit, conceptSections, methodFindings } from "@/data/story";
+import { conceptCurve, conceptLimit, conceptSections } from "@/data/story";
+import { useDict } from "@/lib/i18n";
 import { ease, fadeUp, inView, staggerParent } from "@/lib/motion";
 import { Frame } from "./layout";
 import { ConceptNote, Segmented } from "./ui";
@@ -14,7 +15,7 @@ type Method = "hand" | "sim";
 type Size = { W: number; H: number };
 const WIDE: Size = { W: 520, H: 330 };
 const COMPACT: Size = { W: 340, H: 300 };
-const PAD = { l: 58, r: 18, t: 36, b: 22 };
+const PAD = { l: 74, r: 18, t: 36, b: 22 };
 const scales = ({ W, H }: Size) => ({
   X: (v: number) => PAD.l + ((v + 10) / 110) * (W - PAD.l - PAD.r), // index -10..100
   Y: (d: number) => PAD.t + d * (H - PAD.t - PAD.b),
@@ -37,6 +38,8 @@ function curvePath(kind: Kind, method: Method, size: Size) {
 }
 
 function MethodChart({ kind, method, depth, title }: { kind: Kind; method: Method; depth: number; title: string }) {
+  const t = useDict();
+  const axis = t.methods.axis;
   const titleId = useId();
   const size = useCompact() ? COMPACT : WIDE;
   const { W, H } = size;
@@ -48,19 +51,19 @@ function MethodChart({ kind, method, depth, title }: { kind: Kind; method: Metho
     <figure className="rounded-2xl border border-paper-line bg-paper/80 p-4">
       <figcaption id={titleId} className="flex items-baseline justify-between gap-3">
         <span className="h3 text-paper-ink">{title}</span>
-        <span className="label text-paper-muted">{method === "hand" ? "section by section" : "step by step"}</span>
+        <span className="label text-paper-muted">{method === "hand" ? t.methods.subHand : t.methods.subSim}</span>
       </figcaption>
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full" role="img" aria-labelledby={titleId} aria-describedby="methods-readout">
         {/* axes */}
         <line x1={PAD.l} x2={PAD.l} y1={PAD.t} y2={H - PAD.b} stroke="var(--paper-muted)" strokeWidth="1" />
         <line x1={PAD.l} x2={W - PAD.r} y1={PAD.t} y2={PAD.t} stroke="var(--paper-muted)" strokeWidth="1" />
-        <text x={PAD.l - 8} y={PAD.t + 4} textAnchor="end" className="fill-[var(--paper-muted)] text-[11px]">Surface</text>
-        <text x={PAD.l - 8} y={H - PAD.b} textAnchor="end" className="fill-[var(--paper-muted)] text-[11px]">Bit</text>
+        <text x={PAD.l - 8} y={PAD.t + 4} textAnchor="end" className="fill-[var(--paper-muted)] text-[11px]">{axis.surface}</text>
+        <text x={PAD.l - 8} y={H - PAD.b} textAnchor="end" className="fill-[var(--paper-muted)] text-[11px]">{axis.bit}</text>
         <text x={W - PAD.r} y={PAD.t - 9} textAnchor="end" className="fill-[var(--paper-muted)] text-[11px]">
-          {kind === "torque" ? "Torque" : "Tension"} (index) →
+          {axis.index(t.forces.items[kind].name)}
         </text>
-        <text x={PAD.l - 30} y={(PAD.t + H - PAD.b) / 2} transform={`rotate(-90 ${PAD.l - 30} ${(PAD.t + H - PAD.b) / 2})`} textAnchor="middle" className="fill-[var(--paper-muted)] text-[11px]">
-          Depth ↓
+        <text x={PAD.l - 44} y={(PAD.t + H - PAD.b) / 2} transform={`rotate(-90 ${PAD.l - 44} ${(PAD.t + H - PAD.b) / 2})`} textAnchor="middle" className="fill-[var(--paper-muted)] text-[11px]">
+          {axis.depth}
         </text>
         {/* hand-calc section boundaries */}
         {conceptSections.slice(1, -1).map((s) => (
@@ -68,7 +71,7 @@ function MethodChart({ kind, method, depth, title }: { kind: Kind; method: Metho
         ))}
         {/* design limit — same place on both charts */}
         <line x1={X(lim)} x2={X(lim)} y1={PAD.t} y2={H - PAD.b} stroke="var(--exceed)" strokeWidth="1.5" strokeDasharray="5 4" />
-        <text x={X(lim) - 5} y={H - PAD.b - 8} textAnchor="end" className="fill-[var(--exceed)] text-[11px] font-medium">Design limit</text>
+        <text x={X(lim) - 5} y={H - PAD.b - 8} textAnchor="end" className="fill-[var(--exceed)] text-[11px] font-medium">{axis.limit}</text>
         {/* curve */}
         <motion.path
           key={`${kind}-${method}`}
@@ -95,6 +98,8 @@ function MethodChart({ kind, method, depth, title }: { kind: Kind; method: Metho
 }
 
 export function MethodsChapter() {
+  const t = useDict();
+  const m = t.methods;
   const [kind, setKind] = useState<Kind>("torque");
   const [depth, setDepth] = useState(0.12);
   const hand = conceptCurve(kind, "hand", depth);
@@ -106,30 +111,29 @@ export function MethodsChapter() {
       <Frame>
         <motion.div variants={staggerParent()} initial="hidden" whileInView="show" viewport={inView} className="max-w-[760px]">
           <motion.p variants={fadeUp} className="label text-[#1b6f7d]">
-            <span className="nums">06</span> · Two methods
+            <span className="nums">06</span> · {t.chapters.methods}
           </motion.p>
           <motion.h2 variants={fadeUp} id="methods-title" className="h2 mt-3">
-            Calculation is a starting point. Comparison reveals what needs a closer look.
+            {m.title}
           </motion.h2>
           <motion.p variants={fadeUp} className="prose-body mt-5 text-paper-muted">
-            Every design was checked twice: by hand, with load-mechanics equations applied section by section, and with WellPlan® simulation along
-            the whole path. {methodFindings.agreement} The numbers did not always.
+            {m.intro}
           </motion.p>
         </motion.div>
 
         <div className="mt-10 flex flex-wrap items-end gap-x-8 gap-y-5">
           <Segmented
-            label="Load compared"
+            label={m.kindLabel}
             tone="paper"
             value={kind}
             onChange={setKind}
             options={[
-              { value: "torque", label: "Torque" },
-              { value: "tension", label: "Tension" },
+              { value: "torque", label: t.forces.items.torque.name },
+              { value: "tension", label: t.forces.items.tension.name },
             ]}
           />
           <label className="block w-full max-w-sm text-paper-ink">
-            <span className="label text-paper-muted">Follow the depth — surface to bit</span>
+            <span className="label text-paper-muted">{m.depthLabel}</span>
             <input
               type="range"
               min={0}
@@ -137,58 +141,58 @@ export function MethodsChapter() {
               value={Math.round(depth * 100)}
               onChange={(e) => setDepth(Number(e.target.value) / 100)}
               className="slider on-paper mt-1 text-paper-ink"
-              aria-valuetext={`${Math.round(depth * 100)} percent of the way from surface to bit`}
+              aria-valuetext={m.depthValue(Math.round(depth * 100))}
             />
           </label>
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <MethodChart kind={kind} method="hand" depth={depth} title="Mechanical analysis" />
-          <MethodChart kind={kind} method="sim" depth={depth} title="Software simulation" />
+          <MethodChart kind={kind} method="hand" depth={depth} title={m.chartHand} />
+          <MethodChart kind={kind} method="sim" depth={depth} title={m.chartSim} />
         </div>
 
         <p id="methods-readout" className="nums mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-paper-muted" aria-live="polite">
           <span>
-            At this depth — hand calculation <strong className="text-paper-ink">{hand.toFixed(0)}</strong>
+            {m.readout.at} <strong className="text-paper-ink">{hand.toFixed(0)}</strong>
           </span>
           <span>
-            simulation <strong className="text-paper-ink">{sim.toFixed(0)}</strong>
+            {m.readout.sim} <strong className="text-paper-ink">{sim.toFixed(0)}</strong>
           </span>
           <span>
-            difference <strong className="text-paper-ink">{(gap * 100).toFixed(0)} %</strong>
+            {m.readout.diff} <strong className="text-paper-ink">{(gap * 100).toFixed(0)} %</strong>
           </span>
         </p>
         <ConceptNote tone="paper" className="mt-3" />
-        <p className="mt-1 text-sm text-paper-muted">Curves are drawn to explain the two approaches; they are not the study&apos;s results or WellPlan® output.</p>
+        <p className="mt-1 text-sm text-paper-muted">{m.curvesNote}</p>
 
         <div className="mt-14 grid gap-10 lg:grid-cols-[1fr_1.4fr]">
           <div>
-            <h3 className="h3">What the comparison showed</h3>
+            <h3 className="h3">{m.showedTitle}</h3>
             <ul className="mt-4 space-y-3">
               <li className="flex gap-3">
                 <span aria-hidden="true" className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[#2f8f5b]" />
-                <span>{methodFindings.torque}</span>
+                <span>{m.torqueFinding}</span>
               </li>
               <li className="flex gap-3">
                 <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" className="mt-1.5 shrink-0">
                   <path d="M6 1 L11 11 L1 11 Z" fill="#b87a14" />
                 </svg>
-                <span>{methodFindings.tension}</span>
+                <span>{m.tensionFinding}</span>
               </li>
             </ul>
-            <p className="prose-body mt-6 border-l-2 border-paper-ink pl-4 text-paper-muted">{methodFindings.designB}</p>
+            <p className="prose-body mt-6 border-l-2 border-paper-ink pl-4 text-paper-muted">{m.designB}</p>
           </div>
           <motion.ol variants={staggerParent(0.1)} initial="hidden" whileInView="show" viewport={inView} className="grid gap-4 sm:grid-cols-3">
-            {methodFindings.reasons.map((r, i) => (
+            {m.reasons.map((r, i) => (
               <motion.li key={r.title} variants={fadeUp} className="rounded-2xl border border-paper-line bg-paper p-5">
-                <p className="label nums text-paper-muted">{i < 2 ? `Reason ${i + 1}` : "Takeaway"}</p>
+                <p className="label nums text-paper-muted">{i < 2 ? m.reasonLabel(i + 1) : m.takeaway}</p>
                 <p className="mt-2 font-semibold">{r.title}</p>
                 <p className="mt-2 text-sm leading-relaxed text-paper-muted">{r.body}</p>
               </motion.li>
             ))}
           </motion.ol>
         </div>
-        <p className="h3 mt-14 max-w-[720px]">So the question became: what should change?</p>
+        <p className="h3 mt-14 max-w-[720px]">{m.nextQuestion}</p>
       </Frame>
     </section>
   );

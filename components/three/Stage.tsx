@@ -2,7 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useRef, useState, useSyncExternalStore } from "react";
-import { useStory } from "@/lib/store";
+import { getStory, useStory } from "@/lib/store";
+import { useDict } from "@/lib/i18n";
 import { LABELS } from "./labels";
 import { Fallback } from "./Fallback";
 
@@ -42,6 +43,7 @@ function hasWebGL() {
 const noop = () => () => {};
 
 export function Stage() {
+  const t = useDict();
   const reduced = useReducedMotionPref();
   const webgl = useSyncExternalStore(noop, hasWebGL, () => null);
   const scene = useStory((s) => s.scene);
@@ -51,7 +53,7 @@ export function Stage() {
 
   return (
     <div className="fixed inset-0 z-0" aria-hidden="true">
-      {webgl && <Scene reduced={reduced} active={active} labelLayer={labelLayer} onReady={() => setReady(true)} />}
+      {webgl && <Scene reduced={reduced} active={active} labelLayer={labelLayer} labelText={t.labels3d} onReady={() => setReady(true)} />}
       {(!webgl || !ready) && <Fallback loading={webgl === true || webgl === null} />}
       <div ref={labelLayer} className="pointer-events-none absolute inset-0 overflow-hidden">
         {webgl &&
@@ -62,7 +64,7 @@ export function Stage() {
               data-tone={l.tone ?? "default"}
               className="stage-label absolute left-0 top-0 opacity-0 will-change-transform"
             >
-              <span>{typeof l.text === "string" ? l.text : ""}</span>
+              <span>{l.text(getStory(), t.labels3d)}</span>
             </div>
           ))}
       </div>

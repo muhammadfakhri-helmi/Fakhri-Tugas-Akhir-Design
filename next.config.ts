@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   basePath: process.env.BASE_PATH ?? "",
   trailingSlash: true,
   images: { unoptimized: true },
+  // Two root layouts ("/" English, "/id/" Indonesian) have no single layout to
+  // compose a 404 from, so app/global-not-found.tsx provides a bilingual one.
+  experimental: { globalNotFound: true },
 };
 
 export default nextConfig;

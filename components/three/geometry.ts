@@ -96,7 +96,8 @@ export function shotFor(
   const m = opts.mobile ? 1.35 : 1;
   switch (scene) {
     case "intro":
-      return { pos: [9 * m, -1.5, 19 * m], target: [3, -6.8, 0] };
+      // subject sits right of the hero headline (EN and the longer ID title)
+      return { pos: [6.2 * m, -1.5, 19 * m], target: [0, -6.8, 0] };
     case "path": {
       const mid = (SEGMENT_RANGE[opts.segment][0] + SEGMENT_RANGE[opts.segment][1]) / 2;
       const p = wellCurve.getPointAt(mid);

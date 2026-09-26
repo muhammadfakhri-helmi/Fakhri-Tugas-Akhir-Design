@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { components, segments } from "@/data/story";
+import { useDict } from "@/lib/i18n";
 import { duration, ease } from "@/lib/motion";
 import { setStory, useStory, type Component, type Segment } from "@/lib/store";
 import { Step } from "./layout";
@@ -14,19 +14,18 @@ const swap = {
 };
 
 export function PathChapter() {
+  const t = useDict();
+  const segments = t.path.segments;
   const segment = useStory((s) => s.segment);
   return (
     <section id="path" aria-labelledby="path-title">
       <Step scene="path">
         <StepCard>
-          <ChapterHead n="02" name="Well path" id="path-title" title="A directional path changes how the string moves, contacts the wellbore, and carries load." />
-          <p className="prose-body mt-4 text-muted">
-            The study well follows a build-and-hold profile: drilled straight down, turned at a kick-off point, then held at a steady angle to reach a
-            target offset from the rig.
-          </p>
+          <ChapterHead n="02" name={t.chapters.path} id="path-title" title={t.path.title} />
+          <p className="prose-body mt-4 text-muted">{t.path.intro}</p>
           <div className="mt-6">
             <Segmented
-              label="Section of the well path"
+              label={t.path.groupLabel}
               value={segment}
               onChange={(v: Segment) => setStory({ segment: v })}
               options={(Object.keys(segments) as Segment[]).map((k) => ({ value: k, label: segments[k].name }))}
@@ -41,7 +40,7 @@ export function PathChapter() {
             </AnimatePresence>
           </div>
           <ConceptNote className="mt-5" />
-          <p className="mt-2 text-sm text-faint">Generic geometry — not the study well&apos;s coordinates or survey.</p>
+          <p className="mt-2 text-sm text-faint">{t.path.note}</p>
         </StepCard>
       </Step>
     </section>
@@ -49,14 +48,16 @@ export function PathChapter() {
 }
 
 export function AnatomyChapter() {
+  const t = useDict();
+  const components = t.anatomy.components;
   const component = useStory((s) => s.component);
   const order: Component[] = ["dp", "hwdp", "dc", "bit"];
   return (
     <section id="anatomy" aria-labelledby="anatomy-title">
       <Step scene="anatomy">
         <StepCard>
-          <ChapterHead n="03" name="The string" id="anatomy-title" title="Every section contributes weight, strength, and a different response to load." />
-          <div role="radiogroup" aria-label="Drillstring component" className="mt-6 grid grid-cols-2 gap-2">
+          <ChapterHead n="03" name={t.chapters.anatomy} id="anatomy-title" title={t.anatomy.title} />
+          <div role="radiogroup" aria-label={t.anatomy.groupLabel} className="mt-6 grid grid-cols-2 gap-2">
             {order.map((id, i) => {
               const on = component === id;
               return (
@@ -97,7 +98,7 @@ export function AnatomyChapter() {
             </AnimatePresence>
           </div>
           <ConceptNote className="mt-4" />
-          <p className="mt-2 text-sm text-faint">Illustrative proportions — no real dimensions or grades.</p>
+          <p className="mt-2 text-sm text-faint">{t.anatomy.note}</p>
         </StepCard>
       </Step>
     </section>

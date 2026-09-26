@@ -73,8 +73,8 @@ export function Earth({ instant }: { instant: boolean }) {
         <lineBasicMaterial color={color.lineStrong} transparent depthWrite={false} userData={{ base: 0.9 }} />
       </lineSegments>
       {/* ground surface: a thin slab in front of the section, so the well reads as drilled from it */}
-      <mesh position={[(X0 + X1) / 2, -0.04, (Z1 + 3.2) / 2]}>
-        <boxGeometry args={[X1 - X0, 0.08, 3.2 - Z1]} />
+      <mesh position={[(X0 + X1) / 2, 0, (Z1 + 3.2) / 2]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[X1 - X0, 3.2 - Z1]} />
         <meshStandardMaterial color={color.lineStrong} roughness={0.9} transparent userData={{ base: 0.55 }} />
       </mesh>
       <Rig />

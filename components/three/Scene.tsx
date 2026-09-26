@@ -12,7 +12,7 @@ import { Earth } from "./Earth";
 import { Well } from "./Well";
 import { Forces } from "./Forces";
 import { Exploded } from "./Exploded";
-import { LABELS, anchorFor } from "./labels";
+import { LABELS, anchorFor, type LabelText } from "./labels";
 
 export type SceneProps = {
   /** prefers-reduced-motion: jump between states, no ambient motion */
@@ -20,10 +20,12 @@ export type SceneProps = {
   /** stage is covered (e.g. by the paper section) — stop rendering */
   active: boolean;
   labelLayer: React.RefObject<HTMLDivElement | null>;
+  /** label words in the page's language */
+  labelText: LabelText;
   onReady: () => void;
 };
 
-export default function Scene({ reduced, active, labelLayer, onReady }: SceneProps) {
+export default function Scene({ reduced, active, labelLayer, labelText, onReady }: SceneProps) {
   const frameloop = !active ? "never" : reduced ? "demand" : "always";
   return (
     <Canvas
@@ -43,12 +45,12 @@ export default function Scene({ reduced, active, labelLayer, onReady }: ScenePro
       <hemisphereLight args={["#cfe2ff", "#0a1322", 0.75]} />
       <directionalLight position={[8, 12, 10]} intensity={1.5} />
       <directionalLight position={[-10, -4, 6]} intensity={0.35} color="#7fb6d6" />
-      <World reduced={reduced} labelLayer={labelLayer} />
+      <World reduced={reduced} labelLayer={labelLayer} labelText={labelText} />
     </Canvas>
   );
 }
 
-function World({ reduced, labelLayer }: { reduced: boolean; labelLayer: SceneProps["labelLayer"] }) {
+function World({ reduced, labelLayer, labelText }: { reduced: boolean; labelLayer: SceneProps["labelLayer"]; labelText: LabelText }) {
   const clock = useRef({ t: 0 });
   const invalidate = useThree((s) => s.invalidate);
 
@@ -69,7 +71,7 @@ function World({ reduced, labelLayer }: { reduced: boolean; labelLayer: ScenePro
       ))}
       <Forces instant={reduced} clock={clock} />
       <Exploded instant={reduced} clock={clock} />
-      <LabelProjector layer={labelLayer} reduced={reduced} />
+      <LabelProjector layer={labelLayer} reduced={reduced} labelText={labelText} />
     </>
   );
 }
@@ -119,7 +121,7 @@ function CameraRig({ reduced }: { reduced: boolean }) {
   return null;
 }
 
-function LabelProjector({ layer, reduced }: { layer: SceneProps["labelLayer"]; reduced: boolean }) {
+function LabelProjector({ layer, reduced, labelText }: { layer: SceneProps["labelLayer"]; reduced: boolean; labelText: LabelText }) {
   const { camera, size } = useThree();
   const v = useMemo(() => new THREE.Vector3(), []);
   const nodes = useRef<HTMLElement[] | null>(null);
@@ -132,6 +134,8 @@ function LabelProjector({ layer, reduced }: { layer: SceneProps["labelLayer"]; r
       nodes.current = LABELS.map((l) => el.querySelector<HTMLElement>(`[data-label="${l.id}"]`)!).filter(Boolean);
     }
     const s = getStory();
+    // the camera rig may have moved the camera this frame; project with the new pose
+    camera.updateMatrixWorld();
     LABELS.forEach((def, i) => {
       const node = nodes.current![i];
       if (!node) return;
@@ -148,10 +152,8 @@ function LabelProjector({ layer, reduced }: { layer: SceneProps["labelLayer"]; r
       const o = behind || underCard ? 0 : shown.current[def.id];
       node.style.opacity = String(o);
       node.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
-      if (typeof def.text === "function") {
-        const t = def.text(s);
-        if (node.firstChild?.textContent !== t && node.firstChild) node.firstChild.textContent = t;
-      }
+      const text = def.text(s, labelText);
+      if (node.firstChild && node.firstChild.textContent !== text) node.firstChild.textContent = text;
       if (def.tone === "status") {
         const d = def.id.slice(2);
         node.dataset.status = labelStatus(d, s);

@@ -44,3 +44,16 @@ with `pathLength`. Reduced motion and the Pause button stop ambient movement.
 Narrative cards on the left (≤ 520 px), subject on the right via a camera view
 offset. On phones the subject sits in the upper part of the screen and cards
 scroll over the lower part. Chapter 06 switches to a full-width paper band.
+
+## Two languages
+
+Indonesian copy runs about 15–25 % longer than English, so layouts are checked
+in both languages at 1440 px and 390 px:
+
+- The hero headline wraps naturally (word-by-word reveal, no forced lines); the
+  hero camera keeps the well path clear of the longer Indonesian title.
+- Units stay glued to their numbers with a no-break space (`90 %`).
+- 3D labels are kept short in both languages so neighbouring tags never touch.
+- The EN / ID switch is a two-segment control; the current language is plain
+  text marked `aria-current`, the other is a link named in its own language
+  ("English", "Bahasa Indonesia").
